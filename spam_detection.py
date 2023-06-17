@@ -11,7 +11,7 @@ import pickle
 import streamlit as st
 
 
-loaded_model=pickle.load(open("C:/Users/Mounika/Downloads/trained_model.sav","rb"))
+loaded_model=pickle.load(open('C:/Users/Mounika/Downloads/trained_model.sav','rb'))
 
 def spam_prediction(input_data):
     input_mail = ["I've been searching for the right words to thank you for this breather. I promise i wont take your help for granted and will fulfil my promise. You have been wonderful and a blessing at all times"]
