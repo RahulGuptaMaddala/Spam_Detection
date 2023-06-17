@@ -31,8 +31,8 @@ def main():
     
     diagnosis=""
     
-    if st.button("Diabetes Test Result"):
-        diagnosis=diabetes_prediction([Pregnancies,Glucose,BloodPressure,SkinThickness,Insulin,BMI,DiabetesPedigreeFunction,Age])
+    if st.button("Spam Detection Result"):
+        diagnosis=spam_detection([Category,Message])
     
     st.success(diagnosis)
     
