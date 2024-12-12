@@ -1,0 +1,466 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Exp - 7
+
+-->In Docker Instance
+open cmd
+sudo su
+yum install docker -y
+service docker start
+cd /opt
+ls -a
+mkdir docker
+cd docker
+
+->Creating a docker file
+nano dockerfile
+enter the below 2 lines in the file 
+FROM tomcat:latest
+RUN cp -R /usr/local/tomcat/webapps.dist/* /usr/local/tomcat/webapps/
+
+->Bulding an image
+docker build -t mtomcat .
+
+->Creating a container
+docker run -d --name mtomcat-container -p 8082:8080 mtomcat
+
+->
+docker start mtomcat-container
+docker exec -it mtomcat-container /bin/bash
+mkdir sam
+cd sam
+ls -a
+ls -l
+cd ..
+rm -rf sam
+cd webapps
+mkdir sam
+cd sam
+touch index.jsp
+echo y21acs498-DOCKER > index.jsp
+
+->Now open the instance security and click on the security group link
+->Now click  on edit inbound rules
+->Click on add rule
+->Now add 8080-8090 and source to anywhere from ipv4.
+->Copy the public ip address of the docker instance
+->Past it in the browser along with :8082
+->Now apache tomcat will comes 
+->Now, add the /sam to the same url.
+->Then you can see the y21acs498-Docker as a output
+
+->open the terminal
+exit
+cd /home/ec2-user
+
+->Adding the docker admin to the docker group
+useradd dockeradmin
+passwd dockeradmin
+usermod -aG docker dockeradmin
+
+nano /etc/ssh/sshd_config
+In the nano file 
+->change the password authentication to yes
+
+->Reloading the file
+service sshd reload
+
+->checking if the dockeradmin is working or not
+su dockeradmin
+Enter the password
+exit
+sudo su
+cd /opt
+ls
+
+->Changing the permissions
+chown -R dockeradmin:dockeradmin docker
+ls -l
+cd docker
+
+->To check the images
+docker ps -a
+
+->Now add a line in the dokcerfile
+nano dockerfile
+COPY ./*.war /usr/local/tomcat/webapps/
+--------------------------------------------------------------------------
+Exp - 8
+
+-->In Docker Instance
+sudo su
+service docker start
+
+-->In jenkines Instance 
+open the cmd 
+systemctl start Jenkins
+
+copy the public ip address of jenkins 
+past the ip address in the browser along with :8080
+Now sign with username and password
+
+Click on Manage Jenkins
+Click on the system and scroll down until we get SSH Server
+In SSH Server enter the details 
+In hostname give the docker private ip address
+username -> dockeradmin
+
+
+Now click on the advance 
+Check on the Passwords
+Now Enter the dockeradmin password
+Click on apply and save
+
+Now go to Dashboard
+Click on New Item
+Provide Item Name
+Click on MavenProject
+Select ok
+
+Now in Source Code Management
+Select git
+Paste the MavenProject repository url
+Now change the branch to main
+
+In build Environments 
+Enter the below line in Goles and options
+clean install
+
+Go to the post build actions
+click on add post-build actions
+Click on Send build artificates over ssh
+Source files -> target/*.war
+Remove prefix -> target
+Remote directory -> //opt//docker
+Exec command ->
+cd /opt/docker;
+docker build -t dtomcat .;
+docker container stop dtomcat_container;
+docker container rm dtomcat_container;
+docker run -d --name dtomcat_container -p 8085:8080 dtomcat;
+
+Click on apply and save
+
+Now we can build our project
+
+Now we can check output in 4 ways
+1) Go to console output
+2) In Docker cmd enter the below cmds 
+docker images
+dokcer ps
+4)Copy the docker public ip address
+Enter the ip address in chrome alone with :8085/FirstMavenProject
+-----------------------------------------------------------------------------------------
+Exp - 9
+ANSIBLE-DOCKER
+
+-->In Ansible Instance cmd-
+sudo su
+yum install ansible -y
+exit
+
+->Now generate key pairs
+ssh-keygen
+
+->To check if the keys are generated are not
+cd .ssh
+ls -l
+cd ..
+
+->Now copy the private ip address of the docker instance
+
+ssh-copy-id dockeradmin@docker private ip
+
+
+-->In Docker Instance cmd-
+sudo su
+visudo
+Now a nano file will open 
+in that we add the below line uder the root
+dockeradmin,ALL=(ALL),NOPASSWD: ALL
+
+->Now reload the sshd
+service sshd reload
+
+->Edit the inbound rules of docker instance (8080-8090) (80)
+
+->To show the content of authorized_keys file.
+sudo su dockeradmin
+cd ~
+cd .ssh
+ls -l
+cat authorized_keys
+
+
+-->In Ansible Instance cmd-
+In ec2-user
+
+->Creation of playbook
+nano nginx-setup.yml
+write the below lines in the nano file
+---
+- name: Install Nginx on managed node
+  hosts: dockerhost
+  become: true
+  tasks:
+   - name: Install Nginx
+     yum:
+      name: nginx
+      state: present
+   - name: Start and enable nginx
+     service:
+      name: nginx
+      state: started
+      enabled: true
+...
+
+sudo su
+nano /etc/ansable/hosts
+Now add the below lines in the nano file
+[dockerhost]
+dockerprivateip ansible_user=dockeradmin ansible_ssh_private_key_file=/home/ec2-user/.ssh/id_rsa
+
+ansible-playbook nginx-setup.yml --syntax --check
+ansible-playbook nginx-setup.yml
+
+->Now copy the public ip address of the docker
+Paste the ip address in the chrome along with the :80
+Now a welcome page will be comes 
+
+
+ANSIBLE-JENKINS-DOCKER
+---------------------- 
+
+-->In ansible instance cmd-
+sudo su
+useradd ansadmin
+passwd ansadmin
+
+visudo
+now write the below lines in the nano file
+asadmin,ALL=(ALL),ALL
+
+service sshd reload
+
+->Enable password authentication
+nano /etc/ssh/sshd_config
+Change the PasswordAuthentication to yes
+
+->Now reload the sshd
+service sshd reload
+
+->changing to ansadmin
+sudo su ansadmin
+
+->Generating keypair
+ssh-keygen
+
+-->In Docker Instance cmd-
+sudo su
+useradd ansadmin
+passwd ansadmin
+
+visudo 
+now add the below lines in the nano file
+asadmin,ALL=(ALL),ALL
+
+->Enable password authentication
+nano /etc/ssh/sshd_config
+Change the PasswordAuthentication to yes
+
+
+-->In ansible instance cmd-
+sudo su
+nano /etc/ansible/hosts
+add the below lines in the nano file
+[dockerhost]
+docker private ip
+
+sudo su ansadmin
+ssh-copy-id dokcerprivateip
+
+->Test the connection
+ansible all -m ping
+ansible all -m command -a uptime
+exit
+
+->Install docker in ansible instance and start docker
+yum install docker
+usermod -aG docker ansadmin
+id ansadmin
+service docker start
+
+->create a new docker directory and modify the permissions of it to ansadmin user.
+cd /opt
+mkdir docker
+ls -l
+chown -R ansadmin:ansadmin docker
+ls -l
+
+->Create a new dockerfile in docker directory
+cd docker
+nano dockerfile
+Now add the below lines in the nano file
+FROM tomcat:latest
+RUN cp -R /usr/local/tomcat/webapps.dist/* /usr/local/tomcat/webapps/
+COPY ./*.war /usr/local/tomcat/webapps/
+
+->Add ansible instance ip address to hosts
+nano /etc/ansible/hosts
+Write the below lines in the nano file
+[dockerhost]
+docker private ip
+[ansiblehost]
+ansible private ip
+
+->Go to ansadmin
+sudo su ansadmin
+ssh-copy-id ansibleprivateip
+
+->Test the connection
+ansible all -m ping
+
+-->In Docker Instance cmd-
+In ec2-user root        
+
+->Login to docker hub in cmd
+docker login
+
+-->In Ansible Instance cmd-
+
+->Login to docker hub in cmd
+docker login
+
+->Create a new playbook
+nano heloworld.yml
+Write the below lines in the nano file 
+---
+- hosts: ansiblehost
+
+  tasks:
+  - name: create docker image
+    command: docker build -t helloworld:latest .
+    args:
+      chdir: /opt/docker
+
+  - name: create tag to push onto dockerhub
+    command: docker tag helloworld:latest rahulguptamaddala/helloworld:latest
+
+  - name: push docker image
+    command: docker push rahulguptamaddala/helloworld:latest
+
+...
+
+
+->Check the syntax of the playbook
+ansible-playbook helloworld.yml --syntax --check
+
+->Create a new playbook which is used to create a new container
+nano deploy_helloworld.yml
+Now write the below lines in the nano file
+---
+- hosts: dockerhost
+
+  tasks:
+  - name: create container
+    command: docker run -d --name helloworld_container -p 8082:8080 rahulguptamaddala/helloworld:latest
+
+...
+
+->Check the syntax of the playbook
+ansible-playbook deploy_helloworld.yml --syntax --check
+ls -l
+
+-->In Docker Instance cmd-
+Permissions of docker.sock file in run directory
+chmod 777 /var/run/docker.sock
+
+-->In Jenkins Instance cmd-
+sudo su
+systemctl Jenkins start
+login to the Jenkins in chrome
+
+->Now go to 
+Dashboard-> Manage jenkins-> System
+Go to ssh server
+click on add
+Name -> Ansible
+hostname -> ansible private ip adress
+username -> ansadmin
+check in the check box and give the password of the ansadmin
+click on apply and save
+
+->Now create a new item in Jenkins
+Enter item name
+select maven project
+click on ok
+
+now go to configure -> general
+description -> Deploy to Snsible
+
+->Select source code management
+select git 
+repository link -> MavenProject.git url
+change the branch name to main
+
+->Click on Build Environments
+Goals and options -> clean install
+
+->Click on post build actions 
+Select on add post build actions
+Select on send build artificates over ssh
+Source files -> target/*.war
+Remove prefix -> target
+Remote directory -> //opt//docker
+Exec command ->
+ansible-playbook /opt/docker/helloworld.yml;
+sleep 10;
+ansible-playbook /opt/docker/deploy_helloworld.yml;
+
+->Click on apply and save
+
+->Now build the project file
+After successfully executed we check the console output
+
+In the chrome login to docker hub account and check the repository is created or not
+
+Copy the public ip of the docker instance 
+In the chrome 
+ipadress of docker along with :8082/FirstMavenProject
+
+Before building the 2nd time 
+In the docker instance 
+docker container stop helloworld_container
+docker container rm helloworld_container
+------------------------------------------------------------------------------------------
+
+
