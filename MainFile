@@ -29,6 +29,383 @@
 
 
 
+
+
+
+
+
+
+
+
+
+LAB INTERNAL
+-----------------------------------------------------------------------
+GIT CLONING
+
+-> Create a repositiory
+
+git clone https://github.com/RahulGuptaMaddala/exp1.git
+
+cd exp1
+
+nano ex1
+
+git status
+
+git add ex1
+
+git status
+
+git config --global user.name "RahulGuptaMaddala"
+
+git config --global user.email "rahulguptamaddala3@gmail.com"
+
+git commit -m "FirstCommit"
+
+git push
+-------------------------------------------------------------------------
+GIT-LOCAL REPOSITORY
+
+cd ..
+
+mkdir ex2
+
+cd ex2
+
+git init
+
+nano m1
+
+git status
+
+git add m1
+
+git status
+
+git commit -m "FirstCommit"
+
+git remote add origin https://github.com/RahulGuptaMaddala/new.git
+
+git push origin master
+----------------------------------------------------------------------------
+PULL
+
+cd ..
+
+mkdir goat
+
+cd goat
+
+git init
+
+git branch -m master main
+
+git remote add origin https://github.com/RahulGuptaMaddala/new.git
+
+git pull origin main
+---------------------------------------------------------------------------
+FETCH
+
+-> First, go to already created directory and fetch the content from the remote repository.
+-> cd sample
+-> git status
+-> git fetch
+-> git status
+-> git merge
+-> git status
+
+---------------------------------------------------------------------------
+MERGE
+
+mkdir cat
+
+cd cat
+
+git init
+
+git branch -m master main
+
+git remote add origin https://github.com/RahulGuptaMaddala/new4.git
+
+git pull origin main
+
+git checkout -b newb
+
+nano f1
+
+git status
+
+git add f1
+
+git status
+
+git commit -m "FirstCommit"
+
+git checkout main
+
+git merge newb 
+
+git push origin main
+---------------------------------------------------------------------------
+REBASE 
+
+git checkout -b newb2
+
+nano b2
+
+git status
+
+git add b2
+
+git status
+
+git commit -m "FirstCommit"
+
+git checkout main
+
+git merge newb 
+
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+To change the name 
+sudo su 
+nano /etc/hostname
+
+after changing the name in the nano editor click
+ctrl+o
+enter
+ctrl+x
+
+now we have to restart the system 
+init 6
+-------------------------------------------------------------------------
+EXP-5
+
+Now we have to install the 
+GIT,JDK,TOMCAT,MAVEN
+-------------------------------------------------------------------------
+GIT
+
+-> now we have change the path to root user
+	sudo su
+-> Check the updates
+	yum update
+-> Command to install git
+	yum install git
+-> To check the version 
+	git --version
+--------------------------------------------------------------------------
+JDK
+
+-> Command to install JDK
+	yum install java-17-amazon-corretto-devel
+-> To check the version 
+	javac --version
+-> now we have to set the environmental variables in root user
+	nano .bashrc
+	-> In this file add the below line
+		export JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto
+-> To set the environmental variables immediately we use the below command
+	source .bashrc
+-> to change from root user to ec2-user 
+	exit
+-> now we have to set the environmental variables in ec2-user
+	nano .bashrc
+	-> In this file add the below line
+		export JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto
+-> To set the environmental variables immediately we use the below command
+	source .bashrc
+--------------------------------------------------------------------------------------------------------------------
+
+MAVEN  
+
+-> Change to root user
+	sudo su
+-> We have to install the tomcat in the "opt" directory
+	cd /opt
+-> Command to install maven
+	wget https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
+-> To check if tomcat is installed or not
+	ls -a
+-> To extract the files from .gz 
+	tar -xvzf apache-maven-3.9.9-bin.tar.gz
+-> Now we have change the name of the maven 
+	mv apache-maven-3.9.9 maven
+-> To check the name is changed or not 
+	ls -a
+-> To check the version of the maven
+	maven/bin/mvn -v
+-> Now we have to change to another directory
+	cd /home/ec2-user
+-> now we have to set the environmental variables in root user
+	nano .bashrc
+	-> In this file add the below line
+		export M2_HOME=/opt/maven
+		export M2=/opt/maven/bin
+		export PATH=$PATH:$M2
+-> To set the environmental variables immediately we use the below command
+	source .bashrc
+-> to change from root user to ec2-user 
+	exit
+-> now we have to set the environmental variables in ec2-user
+	nano .bashrc
+	-> In this file add the below line
+		export M2_HOME=/opt/maven
+		export M2=/opt/maven/bin
+		export PATH=$PATH:$M2
+-> To set the environmental variables immediately we use the below command
+	source .bashrc
+-> Now we have to change to another directory in root user 
+	sudo su
+	cd ~ 
+-> now we have to set the environmental variables in root user
+	nano .bashrc
+	-> In this file add the below line
+		export M2_HOME=/opt/maven
+		export M2=/opt/maven/bin
+		export PATH=$PATH:$M2
+-> To set the environmental variables immediately we use the below command
+	source .bashrc
+-------------------------------------------------------------------------------------------------------
+
+TOMCAT 
+
+-> Change to root user
+	sudo su
+-> We have to install the tomcat in the "opt" directory
+	cd /opt
+-> Command to install tomcat
+	wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.98/bin/apache-tomcat-9.0.98.tar.gz
+-> To check if tomcat is installed or not
+	ls -a
+-> To extract the files from .gz 
+	tar -xvzf apache-tomcat-9.0.96.tar.gz
+-> Now we have change the name of the tomcat 
+	mv apache-tomcat-9.0.96 tomcat
+-> To check the name is changed or not 
+	ls -a
+-> Create shortcuts for startup.sh and shutdown.sh files
+	ln -s /opt/tomcat/bin/startup.sh /usr/bin/tomcatstart
+	ln -s /opt/tomcat/bin/shutdown.sh /usr/bin/tomcatstop
+-> For checking the shortcuts we have to start the tomcat and stop the tomcat
+	tomcatstart
+	tomcatstop
+-> Now we have to edit the context.xml so we have to find the path of the  file
+	find / -name context.xml
+-> Here we open and edit the host manager file and manager file in the nano editor (Last 2 links)
+	nano /opt/tomcat/webapps/host-manager/META-INF/context.xml (comment the valve tag)
+	nano /opt/tomcat/webapps/manager/META-INF/context.xml (comment the valve tag)
+-> To access the manager app we have to define some users in tomcat-users.xml file 
+-> To find the path of the tomcat-users.xml file
+	find / -name tomcat-users.xml
+-> Now we have to edit the file in the directory given as output for the above command
+	nano /opt/tomcat/conf/tomcat-users.xml
+-> Now we have to add the below lines in the xml file
+	<role rolename="manager-gui"/>
+	<role rolename="manager-script"/>
+	<role rolename="manager-jmx"/>
+	<role rolename="manager-status"/>
+	<user username="admin" password="admin" roles="manager-gui, manager-script, manager-jmx, manager-status"/>
+	<user username="deployer" password="admin" roles="manager-script"/>
+	<user username="tomcat" password="tomcat" roles="manager-gui"/>
+-> Now to check the tomcat is working or now we use the below steps
+	1. tomcatstart
+	2. In ec2-instance click on security in the bottom 
+	3. click on security group 
+	4. Click on edit inbound rules 
+	5. Click on add rule
+	6. Change the port to 8080
+	7. Change the source to anywhere-ipv4 
+	8. Enter the public ip address:8080 in the chrome 
+	9. Click on the manager app 
+	10. Enter the username and password as admin
+
+----------------------------------------------------------------------------------------------------------------------
+
+Exp - 6
+
+Now we have to install the 
+JENKINS
+
+-> Do the Eclipse before installing the jenkins
+
+-> Now we have to change to the ec2-user (root)
+	cd /home/ec2-user
+-> Command to install the Jenkins package
+	wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+-> Now importing the Jenkins key
+	rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+-> Now  install the Jenkins
+	yum install Jenkins
+-> Now we have to enable the Jenkins
+	systemctl enable Jenkins
+-> Now we will start the Jenkins
+	systemctl start Jenkins
+	-> If any error is present then we have to reconnect to the system
+-> Now we have to add the 9090 port number
+	1. In ec2-instance click on security in the bottom 
+	2. click on security group 
+	3. Click on edit inbound rules 
+	4. Click on add rule
+	5. Change the port to 9090
+	6. Change the source to anywhere-ipv4 
+-> Now we have to change the port number of tomcat from 8080 to 9090.
+	1.cd /opt/tomcat/conf
+	2.ls -a
+	3.nano server.xml
+	4.In the connector tag we change the port number to 9090
+-> Now open the public ip address:8080 in chrome to use the Jenkins
+-> To get the admin password copy the output path and run the below command 
+	cat  /var/lib/jenkins/secrets/initialAdminPassword
+-> Select pluging to install -> install -> enter u r deatils -> save and continue -> save and finish -> start using Jenkins
+
+-> Installing required Plugins
+-> Dashborad > manage jenkins > plugins
+	-> Maven integeration, GitHub ,publish over ssh
+-> Dashborad > manage jenkins > tools
+-> Add JDK
+	java
+	/usr/lib/jvm/java-17-amazon-corretto
+-> Add git
+	Git
+	git
+-> Add Maven
+	Maven
+	/opt/maven
+-> Dashborad > manage jenkins > system
+	-> SSH Server
+	Name:- Tomact-Server
+	Hostname:- private ip address
+	Username:- ec2-user
+	-> Enable Password authentication and write the private key(sample-keypair.perm)
+-> Give the permissions
+	sudo su 
+	usermod -aG root ec2-user
+	chmod -R g+w /opt/tomcat/webapps
+-> Making node online 
+	Dashborad > nodes > build in nodes > Configure
+	put all the values to 0
+-> Create a maven project
+-> Go to configuration of the maven project
+-> Source code management > In Git 
+	Repo link:- paste the git hub link
+	change the branch to main
+-> In build triggers 
+	Poll scm:- * * * * *
+-> In Build > Goles and options
+	clean install
+-> IN post steps
+	Add post build actions
+	send build artifictes over ssh
+-> In Transfers
+	Source Files:- target/*.war
+	Remove prefix:- target
+	Remote Directory:- //opt/tomcat/webapps
+-> Now build the project and check the output for 
+	copy the ip adreess and past it in the chrome and give:9090/FirstMavenProject
+	The output will appers 
+---------------------------------------------------------------------------------------------------------------------------
+
 Exp - 7
 
 -->In Docker Instance
@@ -56,12 +433,6 @@ docker run -d --name mtomcat-container -p 8082:8080 mtomcat
 ->
 docker start mtomcat-container
 docker exec -it mtomcat-container /bin/bash
-mkdir sam
-cd sam
-ls -a
-ls -l
-cd ..
-rm -rf sam
 cd webapps
 mkdir sam
 cd sam
@@ -76,7 +447,8 @@ echo y21acs498-DOCKER > index.jsp
 ->Past it in the browser along with :8082
 ->Now apache tomcat will comes 
 ->Now, add the /sam to the same url.
-->Then you can see the y21acs498-Docker as a output
+->Then you can see the y21acs498-Docker as a output.
+------------------------------------------------------------------------------------------------------
 
 ->open the terminal
 exit
@@ -133,6 +505,7 @@ Click on the system and scroll down until we get SSH Server
 In SSH Server enter the details 
 In hostname give the docker private ip address
 username -> dockeradmin
+Remote->//opt//docker
 
 
 Now click on the advance 
@@ -463,4 +836,30 @@ docker container stop helloworld_container
 docker container rm helloworld_container
 ------------------------------------------------------------------------------------------
 
+Links of the above experments
+----------------------------------------------------------------------------------------------------------------
+java-17-amazon-corretto-devel
+export JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto
 
+https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.96/bin/apache-tomcat-9.0.96.tar.gz
+<role rolename="manager-gui"/>
+<role rolename="manager-script"/>
+<role rolename="manager-jmx"/>
+<role rolename="manager-status"/>
+<user username="admin" password="admin" roles="manager-gui, manager-script, manager-jmx, manager-status"/>
+<user username="deployer" password="admin" roles="manager-script"/>
+<user username="tomcat" password="tomcat" roles="manager-gui"/>
+
+https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
+export M2_HOME=/opt/maven
+export M2=/opt/maven/bin
+export PATH=$PATH:$M2
+
+wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+
+DOCKER FILE
+FROM tomcat:latest
+RUN cp -R /usr/local/tomcat/webapps.dist/* /usr/local/tomcat/webapps/
+COPY ./*.war /usr/local/tomcat/webapps/
+ 
